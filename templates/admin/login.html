@@ -1,0 +1,109 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8"> {#设置页面字符集为utf-8#}
+<meta name="renderer" content="webkit|ie-comp|ie-stand"> <!-- 定义浏览器渲染方式 -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> <!-- 强制使用最新版本的IE内核 -->
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" /> <!-- 设置视口宽度和缩放 -->
+<meta http-equiv="Cache-Control" content="no-siteapp" /> <!-- 控制缓存 -->
+<!--[if lt IE 9]>
+<script type="text/javascript" src="{{ url_for('static',filename='lib/html5shiv.js') }}"></script> {# 如果IE版本低于9,  引入html5shiv.js插件 #}
+<script type="text/javascript" src="{{ url_for('static',filename='lib/respond.min.js') }}"></script> {# 如果IE版本低于9，引入Respond.js插件 #}
+<![endif]-->
+{#此处链接css文件的url_for()函数第一个参数是'static‘,使用的地址是相对于static文件夹的    #}
+{#<link href="static/h-ui/css/H-ui.min.css" rel="stylesheet" type="text/css" /> #静态css文件引入方式，将该css文件应用于当前文档#}
+<link rel="stylesheet" href="{{ url_for('static',filename='static/h-ui/css/H-ui.css') }}"> {# 这里原来是H-ui.min.css文件，没有找到，使用H-ui.css代替试试#}
+<link rel="stylesheet" href="{{ url_for('static',filename='static/h-ui.admin/css/H-ui.login.css') }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='static/h-ui.admin/css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='lib/Hui-iconfont/1.0.8/iconfont.css') }}">
+<!--[if IE 6]>
+<script type="text/javascript" src="{{ url_for('static',filename='lib/DD_belatedPNG_0.0.8a-min.js') }}"></script> {# 如果IE版本低于6，引入DD_belatedPNG插件 #}
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+<title>后台登录</title> {# 设置网页标题 #}
+<meta name="keywords" content="H-ui.admin v3.1,H-ui网站后台模版">
+<meta name="description" content="H-ui.admin v3.1">
+</head>
+
+<body>
+<input type="hidden" id="TenantId" name="TenantId" value="" />
+<div class="header"></div>
+<div class="loginWraper">
+  <div id="loginform" class="loginBox"> {# 登录表单容器 #}
+    <form class="form form-horizontal" action="" method="post"> {# 登录表单 #}
+    {# form是html表单的开始标记，用于创建一个表单元素；class为表单元素添加了两个类；action指定表单数据将被提交到的url，空则被提交到当前页面；method是表单提交方法 #}
+      <div class="row cl">
+        <label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60d;</i></label> {# 表单标签 #}
+        <div class="formControls col-xs-8">
+          <input id="username" name="username" type="text" placeholder="账户" class="input-text size-L"> {# 输入字段 #} {# 用户输入的数据将在表单提交时以名称username一起发送到服务器 #}
+        </div>
+      </div>
+      <div class="row cl">
+        <label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60e;</i></label> {# 表单标签 #}
+        <div class="formControls col-xs-8">
+          <input id="password" name="password" type="password" placeholder="密码" class="input-text size-L"> {# 输入字段 #}
+        </div>
+      </div>
+      <div class="row cl">
+        <div class="formControls col-xs-8 col-xs-offset-3">
+          <input class="input-text size-L" name="captcha" type="text" placeholder="验证码" onblur="if(this.value==''){this.value='验证码:'}" onclick="if(this.value=='验证码:'){this.value='';}" value="验证码:" style="width:150px;">
+          <img id="code" src="{{ url_for('admin.get_code') }}" onclick="ajax1()"></div>
+          <script type="text/javascript" src="{{ url_for('static',filename='lib/jquery/1.9.1/jquery.min.js') }}"></script>
+          <script type="text/javascript" src="{{ url_for('static',filename='static/h-ui/js/H-ui.min.js') }}"></script>
+          <!--使用到AJAX原生XHR对象
+          AJAX:用于创建快速动态网页的技术，通过在后台与服务器进行少量数据交换，AJAX可以使网页实现异步更新-->
+          <!-- 这意味着可以在不重新加载整个网页的情况下，对网页的某部分进行更新-->
+          <script>
+              function ajax1(){
+                  var xhr=new XMLHttpRequest(); {# 创建xhr对象 #}
+                  xhr.open('GET','{{ url_for('admin.get_code') }}',true); {# 向服务器发送数据open(method,url,async)和send(string) #}
+                  {#存储函数，每当readyState属性改变时，就会调用该函数#}
+                  xhr.onreadystatechange=function(){
+                      if(xhr.readyState==4){
+                          console.log(xhr.responseText); {# 在控制台中输出相应 #}
+                          $('#code').attr('src','{{ url_for('admin.get_code') }}?'
+                          +Math.random()) {# Math.random()在url中添加一个唯一的id：随机数 #}
+                      }
+                  };
+                  xhr.send();
+                  console.log(xhr.responseText) {# 可以在控制台里输出相应。无论内容类型是什么，响应主题的内容都会保存到responseText属性中 #}
+              }
+          </script>
+      </div>
+      <div class="row cl">
+        <div class="formControls col-xs-8 col-xs-offset-3">
+          <label for="online">
+            <input type="checkbox" name="online" id="online" value="1">
+            记住我</label>
+        </div>
+      </div>
+      <div class="row cl">
+        <div class="formControls col-xs-8 col-xs-offset-3">
+          <input name="" type="submit" class="btn btn-success radius size-L" value="&nbsp;登&nbsp;&nbsp;&nbsp;&nbsp;录&nbsp;">
+          <input name="" type="reset" class="btn btn-default radius size-L" value="&nbsp;取&nbsp;&nbsp;&nbsp;&nbsp;消&nbsp;">
+        </div>
+      </div>
+      {# 接收并显示相关的出错信息如下 #}
+      {% if message %} {# 若message的内容不为空，则输出该提示信息 #}
+          <p style="color:red; margin-left: 110px; margin-top: 10px;">{{ message }}</p>
+      {% endif %}
+    </form>
+  </div>
+</div>
+<div class="footer">Copyright 你的公司名称 by H-ui.admin v3.1</div>
+{#此处链接js文件使用到的url_for()函数的第一个参数是'static',其地址是相对于static文件夹的#}
+<script type="text/javascript" src="{{ url_for('static',filename='lib/jquery/1.9.1/jquery.min.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='static/h-ui/js/H-ui.min.js') }}"></script>
+{#<!--此乃百度统计代码，请自行删除-->#}
+{#<script>#}
+{#var _hmt = _hmt || [];#}
+{#(function() {#}
+{#  var hm = document.createElement("script");#}
+{#  hm.src = "https://hm.baidu.com/hm.js?080836300300be57b7f34f4b3e97d911";#}
+{#  var s = document.getElementsByTagName("script")[0]; #}
+{#  s.parentNode.insertBefore(hm, s);#}
+{# })();#}
+{#</script>#}
+{#<!--/此乃百度统计代码，请自行删除#}
+</body>
+</html>
